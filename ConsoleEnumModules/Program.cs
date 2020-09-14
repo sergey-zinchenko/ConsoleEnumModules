@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using ProcessAccessFlags = ConsoleEnumModules.WinApiWrapper.ProcessAccessFlags;
@@ -19,31 +20,23 @@ namespace ConsoleEnumModules
                 {
                     var error = Marshal.GetLastWin32Error();
                     Console.WriteLine("EnumProcessModules Error: " + error);
-                    Environment.Exit(1);
+                    return;
                 }
                 var modulesCopied = (uint)(cbNeeded / Marshal.SizeOf(typeof(IntPtr)));
                 for (var i = 0; i < modulesCopied; i++)
                 {
                     var hModule = hModules[i];
-                    try
+                    var strBuilder = new StringBuilder(512);
+                    // if (WinApiWrapper.GetModuleFileNameEx(hProcess, hModule, strBuilder,
+                    //     (uint) strBuilder.Capacity) == 0)
+                    if (WinApiWrapper.GetModuleBaseName(hProcess, hModule, strBuilder,
+                        (uint) strBuilder.Capacity) == 0)
                     {
-                        var strBuilder = new StringBuilder(512);
-                        // if (WinApiWrapper.GetModuleFileNameEx(hProcess, hModule, strBuilder,
-                        //     (uint) strBuilder.Capacity) == 0)
-                        if (WinApiWrapper.GetModuleBaseName(hProcess, hModule, strBuilder,
-                            (uint) strBuilder.Capacity) == 0)
-                        {
-                            var error = Marshal.GetLastWin32Error();
-                            Console.WriteLine("GetModuleBaseName Error: " + error);
-                            continue;
-                        }
-
-                        Console.WriteLine(strBuilder.ToString());
+                        var error = Marshal.GetLastWin32Error();
+                        Console.WriteLine("GetModuleBaseName Error: " + error);
+                        continue;
                     }
-                    finally
-                    {
-                        WinApiWrapper.CloseHandle(hModule);
-                    }
+                    Console.WriteLine(strBuilder.ToString());
                 }
             }
             finally

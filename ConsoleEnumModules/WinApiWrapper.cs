@@ -8,13 +8,15 @@ namespace ConsoleEnumModules
     {
         private const string PsApi = "psapi.dll";
         private const string Kernel = "kernel32.dll";
-        
+
         [DllImport(PsApi, CallingConvention = CallingConvention.Winapi, SetLastError = true)]
-        internal static extern bool EnumProcesses([In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U4)] uint[] processIds,
+        internal static extern bool EnumProcesses(
+            [In, Out, MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.U4)]
+            uint[] processIds,
             uint arraySizeBytes,
             out uint bytesCopied);
-        
-        [DllImport(Kernel,CallingConvention = CallingConvention.Winapi, SetLastError = true)]
+
+        [DllImport(Kernel, CallingConvention = CallingConvention.Winapi, SetLastError = true)]
         internal static extern IntPtr OpenProcess(ProcessAccessFlags dwDesiredAccess,
             [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle,
             uint dwProcessId);
@@ -26,8 +28,8 @@ namespace ConsoleEnumModules
         [DllImport(PsApi, CallingConvention = CallingConvention.Winapi, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.U4)]
         internal static extern uint GetModuleFileNameEx(IntPtr hProcess,
-            IntPtr hModule, 
-            [Out] StringBuilder lpBaseName, 
+            IntPtr hModule,
+            [Out] StringBuilder lpBaseName,
             uint nSize);
 
         [DllImport(PsApi, CallingConvention = CallingConvention.Winapi, SetLastError = true)]
@@ -35,13 +37,13 @@ namespace ConsoleEnumModules
         internal static extern bool EnumProcessModules(IntPtr hProcess,
             IntPtr lphModule,
             uint cb,
-            out uint lpcbNeeded);
+            out uint lPcbNeeded);
 
         [DllImport(PsApi, CallingConvention = CallingConvention.Winapi, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.U4)]
-        internal static extern uint GetModuleBaseName(IntPtr hProcess, 
-            IntPtr hModule, 
-            [Out] StringBuilder lpBaseName, 
+        internal static extern uint GetModuleBaseName(IntPtr hProcess,
+            IntPtr hModule,
+            [Out] StringBuilder lpBaseName,
             uint nSize);
 
         [Flags]

@@ -15,14 +15,15 @@ namespace ConsoleEnumModules
             try
             {
                 var pModules = gcHandle.AddrOfPinnedObject();
-                var arrayBytesSize = (uint)(hModules.Length * Marshal.SizeOf(typeof(IntPtr)));
+                var arrayBytesSize = (uint) (hModules.Length * Marshal.SizeOf(typeof(IntPtr)));
                 if (!WinApiWrapper.EnumProcessModules(hProcess, pModules, arrayBytesSize, out var cbNeeded))
                 {
                     var error = Marshal.GetLastWin32Error();
                     Console.WriteLine("EnumProcessModules Error: " + error);
                     return;
                 }
-                var modulesCopied = (uint)(cbNeeded / Marshal.SizeOf(typeof(IntPtr)));
+
+                var modulesCopied = (uint) (cbNeeded / Marshal.SizeOf(typeof(IntPtr)));
                 for (var i = 0; i < modulesCopied; i++)
                 {
                     var hModule = hModules[i];
@@ -36,6 +37,7 @@ namespace ConsoleEnumModules
                         Console.WriteLine("GetModuleBaseName Error: " + error);
                         continue;
                     }
+
                     Console.WriteLine(strBuilder.ToString());
                 }
             }
@@ -49,7 +51,7 @@ namespace ConsoleEnumModules
         {
             var processIds = new uint[512];
             var arrayBytesSize = (uint) (processIds.Length * Marshal.SizeOf(typeof(uint)));
-            
+
             if (!WinApiWrapper.EnumProcesses(processIds, arrayBytesSize, out var bytesCopied))
             {
                 var error = Marshal.GetLastWin32Error();
@@ -62,13 +64,16 @@ namespace ConsoleEnumModules
             {
                 var pid = processIds[i];
                 Console.WriteLine($"/////////////////////// PID = {pid} ///////////////////////");
-                var hProcess = WinApiWrapper.OpenProcess(ProcessAccessFlags.QueryInformation | ProcessAccessFlags.VmRead, false, pid);
+                var hProcess =
+                    WinApiWrapper.OpenProcess(ProcessAccessFlags.QueryInformation | ProcessAccessFlags.VmRead, false,
+                        pid);
                 if (hProcess == IntPtr.Zero)
                 {
                     var error = Marshal.GetLastWin32Error();
                     Console.WriteLine($"OpenProcess Error: {error}");
                     continue;
                 }
+
                 try
                 {
                     WalkProcess(hProcess);

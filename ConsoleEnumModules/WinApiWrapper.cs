@@ -64,15 +64,15 @@ namespace ConsoleEnumModules
         internal struct ProcessEntry32
         {
             private const int MaxPath = 260;
-            public UInt32 dwSize;
-            public UInt32 cntUsage;
-            public UInt32 th32ProcessID;
+            public uint dwSize;
+            public uint cntUsage;
+            public uint th32ProcessID;
             public IntPtr th32DefaultHeapID;
-            public UInt32 th32ModuleID;
-            public UInt32 cntThreads;
-            public UInt32 th32ParentProcessID;
-            public UInt32 pcPriClassBase;
-            public UInt32 dwFlags;
+            public uint th32ModuleID;
+            public uint cntThreads;
+            public uint th32ParentProcessID;
+            public uint pcPriClassBase;
+            public uint dwFlags;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MaxPath)]
             public string szExeFile;
         }

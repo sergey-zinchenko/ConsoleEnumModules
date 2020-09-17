@@ -59,9 +59,6 @@ namespace ConsoleEnumModules
         [DllImport(Kernel, SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool Process32Next([In]IntPtr hSnapshot, ref ProcessEntry32 lppe);
-        
-        
-        
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
         internal struct ProcessEntry32
@@ -92,8 +89,7 @@ namespace ConsoleEnumModules
         {
             Process = 0x00000002,
             Module = 0x00000008,
-            Module32 = 0x00000010,
-            NoHeaps = 0x40000000
+            Module32 = 0x00000010
         }
     }
 }

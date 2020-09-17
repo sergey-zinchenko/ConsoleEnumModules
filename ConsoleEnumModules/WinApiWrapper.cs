@@ -8,6 +8,10 @@ namespace ConsoleEnumModules
     {
         private const string PsApi = "psapi.dll";
         private const string Kernel = "kernel32.dll";
+        private const int MaxPath = 260;
+        private const int MaxModuleName32 = 255;
+        
+        internal static IntPtr InvalidHandleValue = new IntPtr(-1);
 
         [DllImport(PsApi, CallingConvention = CallingConvention.Winapi, SetLastError = true)]
         internal static extern bool EnumProcesses(
@@ -49,21 +53,26 @@ namespace ConsoleEnumModules
         [DllImport(Kernel, CallingConvention = CallingConvention.Winapi, SetLastError = true)]
         internal static extern IntPtr CreateToolhelp32Snapshot(
             [In, MarshalAs(UnmanagedType.U4)] SnapshotFlags dwFlags,
-            [In, MarshalAs(UnmanagedType.U4)] uint th32ProcessId
+            uint th32ProcessId
         );
         
         [DllImport(Kernel, SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool Process32First([In]IntPtr hSnapshot, ref ProcessEntry32 lppe);
+        internal static extern bool Process32First(IntPtr hSnapshot, ref ProcessEntry32 lppe);
 
         [DllImport(Kernel, SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool Process32Next([In]IntPtr hSnapshot, ref ProcessEntry32 lppe);
+        internal static extern bool Process32Next(IntPtr hSnapshot, ref ProcessEntry32 lppe);
+        
+        [DllImport(Kernel, SetLastError = true, CharSet = CharSet.Auto)]
+        internal static extern bool Module32First(IntPtr hSnapshot, ref ModuleEntry32 lpme);
+        
+        [DllImport(Kernel, SetLastError = true, CharSet = CharSet.Auto)]
+        internal static extern bool Module32Next(IntPtr hSnapshot, ref ModuleEntry32 lpme);
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
         internal struct ProcessEntry32
         {
-            private const int MaxPath = 260;
             public uint dwSize;
             public uint cntUsage;
             public uint th32ProcessID;
@@ -77,6 +86,23 @@ namespace ConsoleEnumModules
             public string szExeFile;
         }
         
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        public struct ModuleEntry32
+        {
+            public uint dwSize;
+            public uint th32ModuleID;
+            public uint th32ProcessID;
+            public uint GlblcntUsage;
+            public uint ProccntUsage;
+            public IntPtr modBaseAddr;
+            public uint modBaseSize;
+            public IntPtr hModule;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MaxModuleName32 + 1)]
+            public string szModule;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MaxPath)]
+            public string szExePath;
+        }
+        
         [Flags]
         internal enum ProcessAccessFlags : uint
         {
@@ -88,8 +114,7 @@ namespace ConsoleEnumModules
         internal enum SnapshotFlags : uint
         {
             Process = 0x00000002,
-            Module = 0x00000008,
-            Module32 = 0x00000010
+            Module = 0x00000008
         }
     }
 }

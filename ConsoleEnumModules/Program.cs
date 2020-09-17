@@ -4,6 +4,7 @@ using System.Text;
 using ProcessAccessFlags = ConsoleEnumModules.WinApiWrapper.ProcessAccessFlags;
 using SnapshotFlags = ConsoleEnumModules.WinApiWrapper.SnapshotFlags;
 using ProcessEntry = ConsoleEnumModules.WinApiWrapper.ProcessEntry32;
+using ModuleEntry = ConsoleEnumModules.WinApiWrapper.ModuleEntry32;
 
 namespace ConsoleEnumModules
 {
@@ -93,7 +94,7 @@ namespace ConsoleEnumModules
         {
             var snapshot = WinApiWrapper.CreateToolhelp32Snapshot(
                 SnapshotFlags.Process, 0);
-            if (snapshot == IntPtr.Zero)
+            if (snapshot == WinApiWrapper.InvalidHandleValue)
             {
                 var error = Marshal.GetLastWin32Error();
                 Console.WriteLine($"CreateToolhelp32Snapshot Error: {error}");
@@ -107,11 +108,14 @@ namespace ConsoleEnumModules
                 {
                     var error = Marshal.GetLastWin32Error();
                     Console.WriteLine($"Process32First Error: {error}");
+                   
                     return;
                 }
                 do
                 {
-                    Console.WriteLine(processEntry.szExeFile);
+                    //Console.WriteLine(processEntry.szExeFile);
+                    Console.WriteLine($"/////////////////////// PID = {processEntry.th32ProcessID} ///////////////////////");
+                    WalkProcess2(processEntry.th32ProcessID);
                 } 
                 while (WinApiWrapper.Process32Next(snapshot, ref processEntry));
             }
@@ -121,10 +125,42 @@ namespace ConsoleEnumModules
             }
         }
 
+        private static void WalkProcess2(uint processId)
+        {
+            var snapshot = WinApiWrapper.CreateToolhelp32Snapshot(
+                SnapshotFlags.Module, processId);
+            if (snapshot == WinApiWrapper.InvalidHandleValue)
+            {
+                var error = Marshal.GetLastWin32Error();
+                Console.WriteLine($"CreateToolhelp32Snapshot Error: {error}");
+                return;
+            }
+            try
+            {
+                ModuleEntry moduleEntry = new ModuleEntry();
+                moduleEntry.dwSize = (uint)Marshal.SizeOf(typeof(ModuleEntry));
+                if (!WinApiWrapper.Module32First(snapshot, ref moduleEntry))
+                {
+                    var error = Marshal.GetLastWin32Error();
+                    Console.WriteLine($"Module32First Error: {error}");
+                    return;
+                }
+                do
+                {
+                    Console.WriteLine(moduleEntry.szModule);
+                } 
+                while (WinApiWrapper.Module32Next(snapshot, ref moduleEntry));
+            }
+            finally
+            {
+                WinApiWrapper.CloseHandle(snapshot);
+            }
+        }
+
         static void Main()
         {   
-            //EnumModules();
-            EnumModules2();
+            EnumModules(); //psapi version
+            EnumModules2(); //toolhelp version
         }
     }
 }

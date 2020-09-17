@@ -87,7 +87,7 @@ namespace ConsoleEnumModules
         }
         
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        public struct ModuleEntry32
+        internal struct ModuleEntry32
         {
             public uint dwSize;
             public uint th32ModuleID;

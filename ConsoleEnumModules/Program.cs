@@ -113,9 +113,9 @@ namespace ConsoleEnumModules
                 }
                 do
                 {
-                    //Console.WriteLine(processEntry.szExeFile);
-                    Console.WriteLine($"/////////////////////// PID = {processEntry.th32ProcessID} ///////////////////////");
-                    WalkProcess2(processEntry.th32ProcessID);
+                    //Console.WriteLine(processEntry.szExeFile);  
+                    Console.WriteLine($"/////////////////////// PID = {processEntry.th32ProcessID} ///////////////////////");  //!!!! Shall not be used to obtain exe name
+                    WalkProcess2(processEntry.th32ProcessID);                                                                  //!!!! Shall not be used to obtain exe name
                 } 
                 while (WinApiWrapper.Process32Next(snapshot, ref processEntry));
             }

@@ -56,18 +56,18 @@ namespace ConsoleEnumModules
             uint th32ProcessId
         );
         
-        [DllImport(Kernel, SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport(Kernel, CallingConvention = CallingConvention.Winapi, SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool Process32First(IntPtr hSnapshot, ref ProcessEntry32 lppe);
 
-        [DllImport(Kernel, SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport(Kernel, CallingConvention = CallingConvention.Winapi, SetLastError = true, CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool Process32Next(IntPtr hSnapshot, ref ProcessEntry32 lppe);
         
-        [DllImport(Kernel, SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport(Kernel, CallingConvention = CallingConvention.Winapi, SetLastError = true, CharSet = CharSet.Auto)]
         internal static extern bool Module32First(IntPtr hSnapshot, ref ModuleEntry32 lpme);
         
-        [DllImport(Kernel, SetLastError = true, CharSet = CharSet.Auto)]
+        [DllImport(Kernel, CallingConvention = CallingConvention.Winapi, SetLastError = true, CharSet = CharSet.Auto)]
         internal static extern bool Module32Next(IntPtr hSnapshot, ref ModuleEntry32 lpme);
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
